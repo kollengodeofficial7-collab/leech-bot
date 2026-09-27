@@ -33,16 +33,13 @@ F_SUB_CHANNEL_2 = os.environ.get("F_SUB_CHANNEL_2", "leech_Update_Channel")
 REFERAL_COUNT = int(os.environ.get('REFERAL_COUNT', '20'))
 REFERAL_PREMEIUM_TIME = os.environ.get('REFERAL_PREMEIUM_TIME', '1month')
 PAYMENT_QR = os.environ.get('PAYMENT_QR', 'https://ibb.co/xtr2Bb71')
-PAYMENT_TEXT = os.environ.get('PAYMENT_TEXT', '<b>- ᴀᴠᴀɪʟᴀʙʟᴇ ᴘʟᴀɴs ❤️ - \n- 15ʀs - 1 ᴅᴀʏꜱ\n- 40ʀs - 1 ᴡᴇᴇᴋ\n- 89ʀs - 1 ᴍᴏɴᴛʜs\n\n🎁 ᴘʀᴇᴍɪᴜᴍ ғᴇᴀᴛᴜʀᴇs 🎁\n\n○ ɴᴏ ɴᴇᴇᴅ ᴛᴏ ᴠᴇʀɪғʏ\n○ ɴᴏ ɴᴇᴇᴅ ᴛᴏ ᴏᴘᴇɴ ʟɪɴᴋ\n○ ᴅɪʀᴇᴄᴛ ғɪʟᴇs\n○ ᴀᴅ-ғʀᴇᴇ ᴇxᴘᴇʀɪᴇɴᴄᴇ\n○ ʜɪɢʜ-sᴘᴇᴇᴅ ᴅᴏᴡɴʟᴏᴀᴅ ʟɪɴᴋ\n○ ᴍᴜʟᴛɪ-ᴘʟᴀʏᴇʀ sᴛʀᴇᴀᴍɪɴɢ ʟɪɴᴋs\n○ ᴜɴʟɪᴍɪᴛᴇᴅ ᴍᴏᴠɪᴇs & sᴇʀɪᴇs\n○ ꜰᴜʟʟ ᴀᴅᴍɪɴ sᴜᴘᴘᴏʀᴛ\n○ ʀᴇǫᴜᴇsᴛ ᴡɪʟʟ ʙᴇ ᴄᴏᴍᴘʟᴇᴛᴇᴅ ɪɴ 1ʜ ɪꜰ ᴀᴠᴀɪʟᴀʙʟᴇ\n\n✨ ᴜᴘɪ ɪᴅ - <code>vijayalakshmik8825@ybl</code>\n\nᴄʟɪᴄᴋ ᴛᴏ ᴄʜᴇᴄᴋ ʏᴏᴜʀ ᴀᴄᴛɪᴠᴇ ᴘʟᴀɴ /myplan\n\n💢 ᴍᴜsᴛ sᴇɴᴅ sᴄʀᴇᴇɴsʜᴏᴛ ᴀғᴛᴇ𝙧 ᴘᴀʏᴍᴇɴᴛ\n\n‼️ ᴀғᴛᴇ𝙧 sᴇɴᴅɪɴɢ ᴀ sᴄʀᴇᴇɴsʜᴏᴛ ᴘʟᴇᴀsᴇ ɢɪᴠᴇ ᴜs sᴏᴍᴇ ᴛɪᴍᴇ ᴛᴏ ᴀᴅᴅ ʏᴏᴜ ɪɴ ᴛ🇭ᴇ ᴘʀᴇᴍɪᴜᴍ</b>')
+PAYMENT_TEXT = os.environ.get('PAYMENT_TEXT', '<b>- ᴀᴠᴀɪʟᴀʙʟᴇ ᴘʟᴀɴs ❤️ - \n- 15ʀs - 1 ᴅᴀʏꜱ\n- 40ʀs - 1 ᴡᴇᴇᴋ\n- 89ʀs - 1 ᴍᴏɴᴛʜs\n\n🎁 ᴘʀᴇᴍɪᴜᴍ ғᴇᴀᴛᴜʀᴇs 🎁\n\n○ ɴᴏ ɴᴇᴇᴅ ᴛᴏ ᴠᴇʀɪғʏ\n○ ɴᴏ ɴᴇᴇᴅ ᴛᴏ ᴏᴘᴇɴ ʟɪɴᴋ\n○ ᴅɪʀᴇᴄᴛ ғɪʟᴇs\n○ ᴀᴅ-ғʀᴇᴇ ᴇxᴘᴇʀɪᴇɴᴄᴇ\n○ ʜɪɢʜ-sᴘᴇᴇᴅ ᴅᴏᴡɴʟᴏᴀᴅ ʟɪɴᴋ\n○ ᴍᴜʟᴛɪ-ᴘʟᴀʏᴇʀ sᴛʀᴇᴀᴍɪɴɢ ʟɪɴᴋs\n○ ᴜɴʟɪᴍɪᴛᴇD ᴍᴏᴠɪᴇs & sᴇʀɪᴇs\n○ ꜰᴜʟʟ ᴀᴅᴍɪɴ sᴜᴘᴘᴏʀᴛ\n○ ʀᴇǫᴜᴇsᴛ ᴡɪʟʟ ʙᴇ ᴄᴏᴍᴘʟᴇᴛᴇᴅ ɪɴ 1ʜ ɪꜰ ᴀᴠᴀɪʟᴀʙʟᴇ\n\n✨ ᴜᴘɪ ɪᴅ - <code>vijayalakshmik8825@ybl</code>\n\nᴄʟɪᴄᴋ ᴛᴏ ᴄʜᴇᴄᴋ ʏᴏᴜʀ ᴀᴄᴛɪᴠᴇ ᴘʟᴀɴ /myplan\n\n💢 ᴍᴜsᴛ sᴇɴᴅ sᴄʀᴇᴇɴsʜᴏᴛ ᴀғᴛᴇʀ ᴘᴀʏᴍᴇɴᴛ\n\n‼️ ᴀғᴛᴇʀ sᴇɴᴅɪɴɢ ᴀ sᴄʀᴇᴇɴsʜᴏᴛ ᴘʟᴇᴀsᴇ ɢɪᴠᴇ ᴜs sᴏᴍᴇ ᴛɪᴍᴇ ᴛᴏ ᴀᴅᴅ ʏᴏU ɪɴ ᴛʜᴇ ᴘʀᴇᴍɪᴜᴍ</b>')
 OWNER_USERNAME = os.environ.get('OWNER_USERNAME', 'Anujith1238')
 
 # Token Verification Info :
-VERIFY = bool(os.environ.get('VERIFY', False))
-VERIFY_SECOND_SHORTNER = bool(os.environ.get('VERIFY_SECOND_SHORTNER', False))
+VERIFY = bool(os.environ.get('VERIFY', True)) # Enabled by default for shortener verification
 VERIFY_SHORTLINK_URL = os.environ.get('VERIFY_SHORTLINK_URL', 'linkshortify.com')
 VERIFY_SHORTLINK_API = os.environ.get('VERIFY_SHORTLINK_API', '927f420bfcbeda36287288f7e98110467feedbef')
-VERIFY_SND_SHORTLINK_URL = os.environ.get('VERIFY_SND_SHORTLINK_URL', 'linkshortify.com')
-VERIFY_SND_SHORTLINK_API = os.environ.get('VERIFY_SND_SHORTLINK_API', '927f420bfcbeda36287288f7e98110467feedbef')
 VERIFY_TUTORIAL = os.environ.get('VERIFY_TUTORIAL', 'https://t.me/How_or_Open_Link')
 
 app = Client("LeechBot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
@@ -105,6 +102,29 @@ def is_verified(user_id):
             del VERIFIED_USERS[user_id]
     return False
 
+async def get_shortlink(url):
+    api_url = f"https://{VERIFY_SHORTLINK_URL}/api?api={VERIFY_SHORTLINK_API}&url={url}"
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(api_url, timeout=10) as response:
+                data = await response.json()
+                if data.get("status") == "success":
+                    return data.get("shortenedUrl")
+    except Exception as e:
+        logging.error(f"Error fetching shortlink: {e}")
+    return url
+
+async def verification_keyboard(client, user_id):
+    bot_info = await client.get_me()
+    bot_username = bot_info.username
+    long_url = f"https://t.me/{bot_username}?start=verify_{user_id}"
+    short_url = await get_shortlink(long_url)
+    
+    return InlineKeyboardMarkup([
+        [InlineKeyboardButton("🔗 Click Here to Verify", url=short_url)],
+        [InlineKeyboardButton("❓ How to Open Link", url=VERIFY_TUTORIAL)]
+    ])
+
 # Force Subscribe Check Function
 async def check_fsub(client, user_id):
     if user_id == ADMIN_ID:
@@ -117,7 +137,6 @@ async def check_fsub(client, user_id):
         except UserNotParticipant:
             return False
         except Exception:
-            # If channel username has missing '@' or similar issue, try adding it or passing
             try:
                 ch = channel if channel.startswith("@") else f"@{channel}"
                 await client.get_chat_member(ch, user_id)
@@ -239,26 +258,6 @@ async def remove_premium_handler(client: Client, message: Message):
     except Exception as e:
         await message.reply_text(f"❌ Failed to remove premium! Error: `{str(e)}`")
 
-# Verification Command
-@app.on_message(filters.command("verify") & (filters.private | filters.chat(ALLOWED_GROUP_ID)))
-async def verify_command_handler(client: Client, message: Message):
-    user_id = message.from_user.id
-    if not await check_fsub(client, user_id):
-        await message.reply_text(
-            "⚠️ **Force Subscription Required!**\n\n"
-            "You must join our update channels below to use this bot.",
-            reply_markup=await not_joined_keyboard()
-        )
-        return
-
-    VERIFIED_USERS[user_id] = time.time() + (12 * 60 * 60)
-    success_text = (
-        "🎉 **Verification Successful!** ✅\n\n"
-        "Your token verification has been completed successfully. "
-        "You now have unlimited download access for the next **12 Hours**! 🚀"
-    )
-    await message.reply_text(success_text)
-
 # Plan and My Plan Commands
 @app.on_message((filters.command("plan") | filters.command("plans")) & (filters.private | filters.chat(ALLOWED_GROUP_ID)))
 async def plan_command_handler(client: Client, message: Message):
@@ -320,6 +319,20 @@ async def myplan_command_handler(client: Client, message: Message):
 async def start_handler(client: Client, message: Message):
     user = message.from_user
     user_id = user.id if user else 0
+
+    if len(message.command) > 1 and message.command[1].startswith("verify_"):
+        try:
+            target_id = int(message.command[1].split("_")[1])
+            if target_id == user_id:
+                VERIFIED_USERS[user_id] = time.time() + (12 * 60 * 60)
+                await message.reply_text(
+                    "🎉 **Verification Successful!** ✅\n\n"
+                    "Your token verification has been completed successfully. "
+                    "You now have unlimited download access for the next **12 Hours**! 🚀"
+                )
+                return
+        except Exception:
+            pass
 
     if not await check_fsub(client, user_id):
         await message.reply_text(
@@ -438,7 +451,6 @@ async def callback_handler(client: Client, callback_query: CallbackQuery):
             await callback_query.answer("❌ You have not joined both update channels yet! Please join them first.", show_alert=True)
         return
 
-    # Check FSub for other callbacks as well
     if not await check_fsub(client, user_id):
         await callback_query.message.edit_text(
             "⚠️ **Force Subscription Required!**\n\n"
@@ -510,9 +522,11 @@ async def callback_handler(client: Client, callback_query: CallbackQuery):
             return
 
         if not is_verified(user_id):
+            keyboard = await verification_keyboard(client, user_id)
             await callback_query.message.edit_text(
-                "⚠️ **Verification Required!**\n\n"
-                "Please complete the token verification using `/verify` to proceed with downloads."
+                "⚠️ **Token Verification Required!**\n\n"
+                "You haven't verified your token for the last 12 hours. Please click the button below to verify and unlock downloads.",
+                reply_markup=keyboard
             )
             return
 
@@ -543,56 +557,6 @@ async def save_thumbnail(client: Client, message: Message):
         WAITING_FOR_THUMB.remove(user_id)
         await message.reply_text("✅ Thumbnail saved successfully!")
 
-@app.on_message(filters.command("v") & (filters.private | filters.chat(ALLOWED_GROUP_ID)))
-async def bypass_handler(client: Client, message: Message):
-    user_id = message.from_user.id
-    if not await check_fsub(client, user_id):
-        await message.reply_text(
-            "⚠️ **Force Subscription Required!**\n\n"
-            "You must join our update channels below to use this command.",
-            reply_markup=await not_joined_keyboard()
-        )
-        return
-
-    if len(message.command) < 2:
-        await message.reply_text("❌ Please provide a verification link!\nExample: `/v https://shortxlinks.in/xxxx`")
-        return
-
-    url = message.command[1]
-    msg = await message.reply_text("🔍 Checking link... Please wait.")
-
-    bypassed_link = url
-    try:
-        api_urls = [
-            f"https://api.bypass.vip/bypass?url={url}",
-            f"https://bypass.pmh.workers.dev/?url={url}"
-        ]
-        
-        async with aiohttp.ClientSession() as session:
-            for api_url in api_urls:
-                try:
-                    async with session.get(api_url, timeout=10) as resp:
-                        if resp.status == 200:
-                            res_data = await resp.json()
-                            dest = res_data.get("destination") or res_data.get("url")
-                            if dest and dest != url:
-                                bypassed_link = dest
-                                break
-                except:
-                    continue
-
-        result_text = (
-            f"<b>Nick Verification Bot</b>\n\n"
-            f"<b>Original Link :</b> 🔗\n"
-            f"✅ <code>{url}</code>\n\n"
-            f"<b>Verified / Bypassed Link :</b> 🔓\n"
-            f"✅ <code>{bypassed_link}</code>"
-        )
-        await msg.edit_text(result_text)
-
-    except Exception as e:
-        await msg.edit_text(f"❌ Failed to verify link!\n\n**Reason:** `{str(e)}`")
-
 # Download Commands Restricted strictly to ALLOWED_GROUP_ID
 @app.on_message(filters.command("leech") & filters.chat(ALLOWED_GROUP_ID))
 async def leech_handler(client: Client, message: Message):
@@ -608,10 +572,13 @@ async def leech_handler(client: Client, message: Message):
         )
         return
 
+    # Check Verification Automatically
     if not is_verified(user_id):
+        keyboard = await verification_keyboard(client, user_id)
         await message.reply_text(
-            "⚠️ **Verification Required!**\n\n"
-            "Please complete the token verification using `/verify` to proceed with downloads."
+            "⚠️ **Token Verification Required!**\n\n"
+            "You haven't verified your token for the last 12 hours. Please complete the verification using the button below to start downloading.",
+            reply_markup=keyboard
         )
         return
 
@@ -691,10 +658,13 @@ async def ytdl_handler(client: Client, message: Message):
         )
         return
 
+    # Check Verification Automatically
     if not is_verified(user_id):
+        keyboard = await verification_keyboard(client, user_id)
         await message.reply_text(
-            "⚠️ **Verification Required!**\n\n"
-            "Please complete the token verification using `/verify` to proceed with downloads."
+            "⚠️ **Token Verification Required!**\n\n"
+            "You haven't verified your token for the last 12 hours. Please complete the verification using the button below to start downloading.",
+            reply_markup=keyboard
         )
         return
 
