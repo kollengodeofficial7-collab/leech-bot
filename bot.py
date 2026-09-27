@@ -4,8 +4,10 @@ import logging
 import asyncio
 import aiohttp
 import subprocess
+from datetime import datetime, timedelta
 from pyrogram import Client, filters, idle
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
+from pyrogram.errors import UserNotParticipant
 import yt_dlp
 from aiohttp import web
 
@@ -23,6 +25,26 @@ ALLOWED_GROUP_ID = int(os.environ.get("ALLOWED_GROUP_ID", "0"))
 
 ADMIN_ID = 1727225499
 
+# Force Subscribe Channels
+F_SUB_CHANNEL_1 = os.environ.get("F_SUB_CHANNEL_1", "AlluTvSerials")
+F_SUB_CHANNEL_2 = os.environ.get("F_SUB_CHANNEL_2", "leech_Update_Channel")
+
+# Premium, Referral & Payment Variables
+REFERAL_COUNT = int(os.environ.get('REFERAL_COUNT', '20'))
+REFERAL_PREMEIUM_TIME = os.environ.get('REFERAL_PREMEIUM_TIME', '1month')
+PAYMENT_QR = os.environ.get('PAYMENT_QR', 'https://ibb.co/xtr2Bb71')
+PAYMENT_TEXT = os.environ.get('PAYMENT_TEXT', '<b>- ᴀᴠᴀɪʟᴀʙʟᴇ ᴘʟᴀɴs ❤️ - \n- 15ʀs - 1 ᴅᴀʏꜱ\n- 40ʀs - 1 ᴡᴇᴇᴋ\n- 89ʀs - 1 ᴍᴏɴᴛʜs\n\n🎁 ᴘʀᴇᴍɪᴜᴍ ғᴇᴀᴛᴜʀᴇs 🎁\n\n○ ɴᴏ ɴᴇᴇᴅ ᴛᴏ ᴠᴇʀɪғʏ\n○ ɴᴏ ɴᴇᴇᴅ ᴛᴏ ᴏᴘᴇɴ ʟɪɴᴋ\n○ ᴅɪʀᴇᴄᴛ ғɪʟᴇs\n○ ᴀᴅ-ғʀᴇᴇ ᴇxᴘᴇʀɪᴇɴᴄᴇ\n○ ʜɪɢʜ-sᴘᴇᴇᴅ ᴅᴏᴡɴʟᴏᴀᴅ ʟɪɴᴋ\n○ ᴍᴜʟᴛɪ-ᴘʟᴀʏᴇʀ sᴛʀᴇᴀᴍɪɴɢ ʟɪɴᴋs\n○ ᴜɴʟɪᴍɪᴛᴇᴅ ᴍᴏᴠɪᴇs & sᴇʀɪᴇs\n○ ꜰᴜʟʟ ᴀᴅᴍɪɴ sᴜᴘᴘᴏʀᴛ\n○ ʀᴇǫᴜᴇsᴛ ᴡɪʟʟ ʙᴇ ᴄᴏᴍᴘʟᴇᴛᴇᴅ ɪɴ 1ʜ ɪꜰ ᴀᴠᴀɪʟᴀʙʟᴇ\n\n✨ ᴜᴘɪ ɪᴅ - <code>vijayalakshmik8825@ybl</code>\n\nᴄʟɪᴄᴋ ᴛᴏ ᴄʜᴇᴄᴋ ʏᴏᴜʀ ᴀᴄᴛɪᴠᴇ ᴘʟᴀɴ /myplan\n\n💢 ᴍᴜsᴛ sᴇɴᴅ sᴄʀᴇᴇɴsʜᴏᴛ ᴀғᴛᴇ𝙧 ᴘᴀʏᴍᴇɴᴛ\n\n‼️ ᴀғᴛᴇ𝙧 sᴇɴᴅɪɴɢ ᴀ sᴄʀᴇᴇɴsʜᴏᴛ ᴘʟᴇᴀsᴇ ɢɪᴠᴇ ᴜs sᴏᴍᴇ ᴛɪᴍᴇ ᴛᴏ ᴀᴅᴅ ʏᴏᴜ ɪɴ ᴛ🇭ᴇ ᴘʀᴇᴍɪᴜᴍ</b>')
+OWNER_USERNAME = os.environ.get('OWNER_USERNAME', 'Anujith1238')
+
+# Token Verification Info :
+VERIFY = bool(os.environ.get('VERIFY', False))
+VERIFY_SECOND_SHORTNER = bool(os.environ.get('VERIFY_SECOND_SHORTNER', False))
+VERIFY_SHORTLINK_URL = os.environ.get('VERIFY_SHORTLINK_URL', 'linkshortify.com')
+VERIFY_SHORTLINK_API = os.environ.get('VERIFY_SHORTLINK_API', '927f420bfcbeda36287288f7e98110467feedbef')
+VERIFY_SND_SHORTLINK_URL = os.environ.get('VERIFY_SND_SHORTLINK_URL', 'linkshortify.com')
+VERIFY_SND_SHORTLINK_API = os.environ.get('VERIFY_SND_SHORTLINK_API', '927f420bfcbeda36287288f7e98110467feedbef')
+VERIFY_TUTORIAL = os.environ.get('VERIFY_TUTORIAL', 'https://t.me/How_or_Open_Link')
+
 app = Client("LeechBot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
 
 USER_THUMBNAILS = {}
@@ -34,7 +56,10 @@ ACTIVE_TASKS = {}
 USER_TASK_LIMIT = 2
 CANCEL_REQUESTS = set()
 
-# Start Command Image URL
+# Premium Users & Verification Tracking: {user_id: expiry_timestamp}
+PREMIUM_USERS = {}
+VERIFIED_USERS = {}
+
 START_IMAGE_URL = "https://files.catbox.moe/yazhfx.jpg"
 
 async def web_handler(request):
@@ -57,6 +82,55 @@ def human_bytes(size):
         size /= 1024
         i += 1
     return f"{size:.2f} {units[i]}"
+
+def is_premium(user_id):
+    if user_id == ADMIN_ID:
+        return True
+    if user_id in PREMIUM_USERS:
+        if time.time() < PREMIUM_USERS[user_id]:
+            return True
+        else:
+            del PREMIUM_USERS[user_id]
+    return False
+
+def is_verified(user_id):
+    if is_premium(user_id):
+        return True
+    if not VERIFY:
+        return True
+    if user_id in VERIFIED_USERS:
+        if time.time() < VERIFIED_USERS[user_id]:
+            return True
+        else:
+            del VERIFIED_USERS[user_id]
+    return False
+
+# Force Subscribe Check Function
+async def check_fsub(client, user_id):
+    if user_id == ADMIN_ID:
+        return True
+    
+    channels = [F_SUB_CHANNEL_1, F_SUB_CHANNEL_2]
+    for channel in channels:
+        try:
+            await client.get_chat_member(channel, user_id)
+        except UserNotParticipant:
+            return False
+        except Exception:
+            # If channel username has missing '@' or similar issue, try adding it or passing
+            try:
+                ch = channel if channel.startswith("@") else f"@{channel}"
+                await client.get_chat_member(ch, user_id)
+            except Exception:
+                pass
+    return True
+
+async def not_joined_keyboard():
+    return InlineKeyboardMarkup([
+        [InlineKeyboardButton("📢 Join Update Channel 1", url="https://t.me/AlluTvSerials")],
+        [InlineKeyboardButton("📢 Join Update Channel 2", url="https://t.me/leech_Update_Channel")],
+        [InlineKeyboardButton("🔄 Try Again", callback_data="check_fsub")]
+    ])
 
 def get_video_info(file_path):
     duration = 0
@@ -125,10 +199,137 @@ async def download_thumbnail_from_source(client, thumb_source, user_id):
         logging.error(f"Failed to fetch custom thumbnail from -t: {e}")
     return None
 
+# Admin Commands for Premium Management
+@app.on_message(filters.command("addpremium") & (filters.private | filters.chat(ALLOWED_GROUP_ID)))
+async def add_premium_handler(client: Client, message: Message):
+    if message.from_user.id != ADMIN_ID:
+        await message.reply_text("❌ You are not authorized to use this command!")
+        return
+
+    if len(message.command) < 3:
+        await message.reply_text("❌ Usage: `/addpremium <user_id> <days>`")
+        return
+
+    try:
+        target_user_id = int(message.command[1])
+        days = int(message.command[2])
+        expiry_time = time.time() + (days * 24 * 60 * 60)
+        PREMIUM_USERS[target_user_id] = expiry_time
+        await message.reply_text(f"✅ Successfully added user `{target_user_id}` to Premium for `{days}` days!")
+    except Exception as e:
+        await message.reply_text(f"❌ Failed to add premium! Error: `{str(e)}`")
+
+@app.on_message(filters.command("removepremium") & (filters.private | filters.chat(ALLOWED_GROUP_ID)))
+async def remove_premium_handler(client: Client, message: Message):
+    if message.from_user.id != ADMIN_ID:
+        await message.reply_text("❌ You are not authorized to use this command!")
+        return
+
+    if len(message.command) < 2:
+        await message.reply_text("❌ Usage: `/removepremium <user_id>`")
+        return
+
+    try:
+        target_user_id = int(message.command[1])
+        if target_user_id in PREMIUM_USERS:
+            del PREMIUM_USERS[target_user_id]
+            await message.reply_text(f"✅ Successfully removed user `{target_user_id}` from Premium!")
+        else:
+            await message.reply_text("⚠️ This user is not in the premium list.")
+    except Exception as e:
+        await message.reply_text(f"❌ Failed to remove premium! Error: `{str(e)}`")
+
+# Verification Command
+@app.on_message(filters.command("verify") & (filters.private | filters.chat(ALLOWED_GROUP_ID)))
+async def verify_command_handler(client: Client, message: Message):
+    user_id = message.from_user.id
+    if not await check_fsub(client, user_id):
+        await message.reply_text(
+            "⚠️ **Force Subscription Required!**\n\n"
+            "You must join our update channels below to use this bot.",
+            reply_markup=await not_joined_keyboard()
+        )
+        return
+
+    VERIFIED_USERS[user_id] = time.time() + (12 * 60 * 60)
+    success_text = (
+        "🎉 **Verification Successful!** ✅\n\n"
+        "Your token verification has been completed successfully. "
+        "You now have unlimited download access for the next **12 Hours**! 🚀"
+    )
+    await message.reply_text(success_text)
+
+# Plan and My Plan Commands
+@app.on_message((filters.command("plan") | filters.command("plans")) & (filters.private | filters.chat(ALLOWED_GROUP_ID)))
+async def plan_command_handler(client: Client, message: Message):
+    user_id = message.from_user.id
+    if not await check_fsub(client, user_id):
+        await message.reply_text(
+            "⚠️ **Force Subscription Required!**\n\n"
+            "You must join our update channels below to view plans.",
+            reply_markup=await not_joined_keyboard()
+        )
+        return
+
+    keyboard = InlineKeyboardMarkup([
+        [InlineKeyboardButton("👤 Contact Admin", url=f"https://t.me/{OWNER_USERNAME}")]
+    ])
+    try:
+        await message.reply_photo(
+            photo=PAYMENT_QR,
+            caption=PAYMENT_TEXT,
+            reply_markup=keyboard
+        )
+    except Exception:
+        await message.reply_text(
+            PAYMENT_TEXT,
+            reply_markup=keyboard
+        )
+
+@app.on_message(filters.command("myplan") & (filters.private | filters.chat(ALLOWED_GROUP_ID)))
+async def myplan_command_handler(client: Client, message: Message):
+    user_id = message.from_user.id
+    if not await check_fsub(client, user_id):
+        await message.reply_text(
+            "⚠️ **Force Subscription Required!**\n\n"
+            "You must join our update channels below to check your plan.",
+            reply_markup=await not_joined_keyboard()
+        )
+        return
+
+    user_name = message.from_user.first_name
+
+    if is_premium(user_id):
+        if user_id == ADMIN_ID:
+            status_text = "👑 **Status:** Admin / Lifetime Premium ♾️"
+        else:
+            expiry_timestamp = PREMIUM_USERS.get(user_id, time.time())
+            expiry_date = datetime.fromtimestamp(expiry_timestamp).strftime('%Y-%m-%d %H:%M:%S')
+            status_text = f"🌟 **Status:** Active Premium User ✨\n⏳ **Expires On:** `{expiry_date}`"
+    else:
+        status_text = "📦 **Status:** Free User / Standard Plan\n\n💡 *Upgrade to Premium to get unlimited downloads and ad-free experience! Use /plan to check details.*"
+
+    await message.reply_text(
+        f"👤 **User Account Plan Info:**\n\n"
+        f"<b>Name:</b> {user_name}\n"
+        f"<b>User ID:</b> <code>{user_id}</code>\n\n"
+        f"{status_text}"
+    )
+
 @app.on_message(filters.command("start") & filters.private)
 async def start_handler(client: Client, message: Message):
     user = message.from_user
     user_id = user.id if user else 0
+
+    if not await check_fsub(client, user_id):
+        await message.reply_text(
+            "⚠️ **Force Subscription Required!**\n\n"
+            "You must join our update channels below to use this bot.\n\n"
+            "👉 **Join Update Channel 1 & 2, then click Try Again!**",
+            reply_markup=await not_joined_keyboard()
+        )
+        return
+
     user_name = user.first_name if user else "Unknown"
     username = f"@{user.username}" if user and user.username else "No Username"
 
@@ -148,14 +349,15 @@ async def start_handler(client: Client, message: Message):
         f"🌟 **Welcome to Advanced Leech Bot, {user_name}!** 🚀\n\n"
         f"I am an advanced Leech Bot. I can help you download videos and audio from TeraBox, YouTube, Telegram links, M3U8, MP4, MP3, and more.\n\n"
         f"🛠️ **Key Features:**\n"
-        f" • Use `-n` to rename the media to your custom filename.\n"
-        f" • Use `-t` to set a custom thumbnail using an image URL or Telegram link.\n"
-        f" • Use `/usetting` to manage your personal settings.\n\n"
+        f" • Use `-n` to rename media.\n"
+        f" • Use `-t` to set custom thumbnails.\n"
+        f" • Use `/usetting` to configure settings.\n"
+        f" • Premium users get unlimited concurrent tasks!\n\n"
         f"For any assistance or support, feel free to contact the admin below. 👇"
     )
 
     keyboard = InlineKeyboardMarkup([
-        [InlineKeyboardButton("👤 Contact Admin", url="https://t.me/anujith1238")]
+        [InlineKeyboardButton("👤 Contact Admin", url=f"https://t.me/{OWNER_USERNAME}")]
     ])
     
     try:
@@ -172,6 +374,15 @@ async def start_handler(client: Client, message: Message):
 
 @app.on_message(filters.command("help") & (filters.private | filters.chat(ALLOWED_GROUP_ID)))
 async def help_handler(client: Client, message: Message):
+    user_id = message.from_user.id
+    if not await check_fsub(client, user_id):
+        await message.reply_text(
+            "⚠️ **Force Subscription Required!**\n\n"
+            "You must join our update channels below to access help.",
+            reply_markup=await not_joined_keyboard()
+        )
+        return
+
     help_text = (
         "🆘 **Need Help & Support?** 🛠️\n\n"
         "Dear user, if you are facing any issues with downloads or have any questions regarding the bot's functionality, we are here to help you!\n\n"
@@ -179,7 +390,7 @@ async def help_handler(client: Client, message: Message):
     )
 
     keyboard = InlineKeyboardMarkup([
-        [InlineKeyboardButton("👤 Contact Admin", url="https://t.me/anujith1238")]
+        [InlineKeyboardButton("👤 Contact Admin", url=f"https://t.me/{OWNER_USERNAME}")]
     ])
 
     await message.reply_text(
@@ -187,9 +398,17 @@ async def help_handler(client: Client, message: Message):
         reply_markup=keyboard
     )
 
-@app.on_message(filters.command("usetting") & filters.chat(ALLOWED_GROUP_ID))
+@app.on_message(filters.command("usetting") & (filters.private | filters.chat(ALLOWED_GROUP_ID)))
 async def usetting_handler(client: Client, message: Message):
     user_id = message.from_user.id
+    if not await check_fsub(client, user_id):
+        await message.reply_text(
+            "⚠️ **Force Subscription Required!**\n\n"
+            "You must join our update channels below to use settings.",
+            reply_markup=await not_joined_keyboard()
+        )
+        return
+
     has_thumb = "Yes 🖼️" if user_id in USER_THUMBNAILS and USER_THUMBNAILS[user_id] else "No ❌"
     current_mode = USER_FILE_MODES.get(user_id, "video")
     mode_text = "📹 Video Format" if current_mode == "video" else "📁 Document Format"
@@ -212,10 +431,26 @@ async def callback_handler(client: Client, callback_query: CallbackQuery):
     user_id = callback_query.from_user.id
     data = callback_query.data
     
+    if data == "check_fsub":
+        if await check_fsub(client, user_id):
+            await callback_query.message.edit_text("✅ Thank you for joining our update channels! You can now use the bot freely. Send /start or your command again.")
+        else:
+            await callback_query.answer("❌ You have not joined both update channels yet! Please join them first.", show_alert=True)
+        return
+
+    # Check FSub for other callbacks as well
+    if not await check_fsub(client, user_id):
+        await callback_query.message.edit_text(
+            "⚠️ **Force Subscription Required!**\n\n"
+            "You must join our update channels below to proceed.",
+            reply_markup=await not_joined_keyboard()
+        )
+        return
+
     if data == "set_thumb":
         WAITING_FOR_THUMB.add(user_id)
         await callback_query.message.edit_text(
-            "🖼️ Please send your thumbnail photo (Image) to this group.\n"
+            "🖼️ Please send your thumbnail photo (Image) here.\n"
             "The bot will automatically save it as your default thumbnail!"
         )
     elif data == "view_thumb":
@@ -265,7 +500,7 @@ async def callback_handler(client: Client, callback_query: CallbackQuery):
             CANCEL_REQUESTS.add(task_user_id)
             await callback_query.answer("⚠️ Task Cancel requested... Please wait.", show_alert=True)
         else:
-            await callback_query.answer("❌ You are not authorized to cancel this task! Only the user who started it or Admin can cancel.", show_alert=True)
+            await callback_query.answer("❌ You are not authorized to cancel this task!", show_alert=True)
 
     elif data.startswith("ytdl_"):
         format_code = data.split("_")[1]
@@ -274,22 +509,32 @@ async def callback_handler(client: Client, callback_query: CallbackQuery):
             await callback_query.message.edit_text("❌ Link expired or not found. Please send the `/ytdl` command again.")
             return
 
-        if user_id != ADMIN_ID:
+        if not is_verified(user_id):
+            await callback_query.message.edit_text(
+                "⚠️ **Verification Required!**\n\n"
+                "Please complete the token verification using `/verify` to proceed with downloads."
+            )
+            return
+
+        if not is_premium(user_id):
             active_count = ACTIVE_TASKS.get(user_id, 0)
             if active_count >= USER_TASK_LIMIT:
                 await callback_query.message.edit_text(
                     f"⚠️ **Limit Exceeded!**\n\n"
-                    f"You already have `{active_count}` active downloads running. "
-                    f"Please wait for them to finish before starting a new one (Max allowed: {USER_TASK_LIMIT})."
+                    f"You have `{active_count}` active downloads running. "
+                    f"Upgrade to Premium for unlimited downloads!"
                 )
                 return
 
         await callback_query.message.edit_text("⏳ Initializing download with selected quality... Please wait.")
         await process_download(client, callback_query.message, user_id, callback_query.from_user.first_name, url, None, None, format_code)
 
-@app.on_message(filters.photo & filters.chat(ALLOWED_GROUP_ID))
+@app.on_message(filters.photo & (filters.private | filters.chat(ALLOWED_GROUP_ID)))
 async def save_thumbnail(client: Client, message: Message):
     user_id = message.from_user.id
+    if not await check_fsub(client, user_id):
+        return
+
     if user_id in WAITING_FOR_THUMB:
         os.makedirs("thumbnails", exist_ok=True)
         photo_path = f"thumbnails/{user_id}.jpg"
@@ -298,8 +543,17 @@ async def save_thumbnail(client: Client, message: Message):
         WAITING_FOR_THUMB.remove(user_id)
         await message.reply_text("✅ Thumbnail saved successfully!")
 
-@app.on_message(filters.command("v") & filters.chat(ALLOWED_GROUP_ID))
+@app.on_message(filters.command("v") & (filters.private | filters.chat(ALLOWED_GROUP_ID)))
 async def bypass_handler(client: Client, message: Message):
+    user_id = message.from_user.id
+    if not await check_fsub(client, user_id):
+        await message.reply_text(
+            "⚠️ **Force Subscription Required!**\n\n"
+            "You must join our update channels below to use this command.",
+            reply_markup=await not_joined_keyboard()
+        )
+        return
+
     if len(message.command) < 2:
         await message.reply_text("❌ Please provide a verification link!\nExample: `/v https://shortxlinks.in/xxxx`")
         return
@@ -328,19 +582,39 @@ async def bypass_handler(client: Client, message: Message):
                     continue
 
         result_text = (
-            f"<b>Nick Bypass Bot</b>\n\n"
+            f"<b>Nick Verification Bot</b>\n\n"
             f"<b>Original Link :</b> 🔗\n"
             f"✅ <code>{url}</code>\n\n"
-            f"<b>Bypassed Link :</b> 🔓\n"
+            f"<b>Verified / Bypassed Link :</b> 🔓\n"
             f"✅ <code>{bypassed_link}</code>"
         )
         await msg.edit_text(result_text)
 
     except Exception as e:
-        await msg.edit_text(f"❌ Failed to bypass link!\n\n**Reason:** `{str(e)}`")
+        await msg.edit_text(f"❌ Failed to verify link!\n\n**Reason:** `{str(e)}`")
 
+# Download Commands Restricted strictly to ALLOWED_GROUP_ID
 @app.on_message(filters.command("leech") & filters.chat(ALLOWED_GROUP_ID))
 async def leech_handler(client: Client, message: Message):
+    user = message.from_user
+    user_name = user.first_name if user else "Unknown"
+    user_id = user.id if user else 0
+
+    if not await check_fsub(client, user_id):
+        await message.reply_text(
+            "⚠️ **Force Subscription Required!**\n\n"
+            "You must join our update channels below to use leech downloads.",
+            reply_markup=await not_joined_keyboard()
+        )
+        return
+
+    if not is_verified(user_id):
+        await message.reply_text(
+            "⚠️ **Verification Required!**\n\n"
+            "Please complete the token verification using `/verify` to proceed with downloads."
+        )
+        return
+
     url = ""
     raw_text = ""
     custom_name = None
@@ -389,17 +663,13 @@ async def leech_handler(client: Client, message: Message):
         if "-t" in parts[1]:
             custom_thumb_source = parts[1].split("-t")[1].strip()
 
-    user = message.from_user
-    user_name = user.first_name if user else "Unknown"
-    user_id = user.id if user else 0
-
-    if user_id != ADMIN_ID:
+    if not is_premium(user_id):
         active_count = ACTIVE_TASKS.get(user_id, 0)
         if active_count >= USER_TASK_LIMIT:
             await message.reply_text(
                 f"⚠️ **Limit Exceeded!**\n\n"
-                f"You already have `{active_count}` active downloads running. "
-                f"Please wait for them to finish before starting a new one (Max allowed: {USER_TASK_LIMIT})."
+                f"You have `{active_count}` active downloads running. "
+                f"Upgrade to Premium for unlimited downloads (Max allowed: {USER_TASK_LIMIT})."
             )
             return
 
@@ -412,12 +682,27 @@ async def leech_handler(client: Client, message: Message):
 
 @app.on_message((filters.command("ytdl") | filters.command("yt")) & filters.chat(ALLOWED_GROUP_ID))
 async def ytdl_handler(client: Client, message: Message):
+    user_id = message.from_user.id
+    if not await check_fsub(client, user_id):
+        await message.reply_text(
+            "⚠️ **Force Subscription Required!**\n\n"
+            "You must join our update channels below to use ytdl downloads.",
+            reply_markup=await not_joined_keyboard()
+        )
+        return
+
+    if not is_verified(user_id):
+        await message.reply_text(
+            "⚠️ **Verification Required!**\n\n"
+            "Please complete the token verification using `/verify` to proceed with downloads."
+        )
+        return
+
     if len(message.command) < 2:
         await message.reply_text("❌ Please provide a YouTube link!\nExample: `/ytdl https://youtu.be/xxxx`")
         return
 
     url = message.command[1]
-    user_id = message.from_user.id
     USER_YTDL_LINKS[user_id] = url
 
     keyboard = InlineKeyboardMarkup([
