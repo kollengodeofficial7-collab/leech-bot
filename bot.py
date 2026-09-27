@@ -34,6 +34,9 @@ ACTIVE_TASKS = {}
 USER_TASK_LIMIT = 2
 CANCEL_REQUESTS = set()
 
+# Start Command Image URL
+START_IMAGE_URL = "https://files.catbox.moe/yazhfx.jpg"
+
 async def web_handler(request):
     return web.Response(text="Bot is Live! 🚀")
 
@@ -141,12 +144,46 @@ async def start_handler(client: Client, message: Message):
         except Exception as e:
             logging.error(f"Failed to send start log to LOG_CHANNEL: {e}")
 
+    welcome_text = (
+        f"🌟 **Welcome to Advanced Leech Bot, {user_name}!** 🚀\n\n"
+        f"I am an advanced Leech Bot. I can help you download videos and audio from TeraBox, YouTube, Telegram links, M3U8, MP4, MP3, and more.\n\n"
+        f"🛠️ **Key Features:**\n"
+        f" • Use `-n` to rename the media to your custom filename.\n"
+        f" • Use `-t` to set a custom thumbnail using an image URL or Telegram link.\n"
+        f" • Use `/usetting` to manage your personal settings.\n\n"
+        f"For any assistance or support, feel free to contact the admin below. 👇"
+    )
+
     keyboard = InlineKeyboardMarkup([
-        [InlineKeyboardButton("👤 Admin Contact", url="https://t.me/anujith1238")]
+        [InlineKeyboardButton("👤 Contact Admin", url="https://t.me/anujith1238")]
     ])
+    
+    try:
+        await message.reply_photo(
+            photo=START_IMAGE_URL,
+            caption=welcome_text,
+            reply_markup=keyboard
+        )
+    except Exception:
+        await message.reply_text(
+            welcome_text,
+            reply_markup=keyboard
+        )
+
+@app.on_message(filters.command("help") & (filters.private | filters.chat(ALLOWED_GROUP_ID)))
+async def help_handler(client: Client, message: Message):
+    help_text = (
+        "🆘 **Need Help & Support?** 🛠️\n\n"
+        "Dear user, if you are facing any issues with downloads or have any questions regarding the bot's functionality, we are here to help you!\n\n"
+        "You can directly contact our admin for support using the button below. 👇"
+    )
+
+    keyboard = InlineKeyboardMarkup([
+        [InlineKeyboardButton("👤 Contact Admin", url="https://t.me/anujith1238")]
+    ])
+
     await message.reply_text(
-        "🤖 **I am Leech Bot!**\n"
-        "Ready to help you download and manage files.",
+        help_text,
         reply_markup=keyboard
     )
 
@@ -160,12 +197,13 @@ async def usetting_handler(client: Client, message: Message):
     keyboard = InlineKeyboardMarkup([
         [InlineKeyboardButton(f"Thumbnail Set: {has_thumb}", callback_data="set_thumb")],
         [InlineKeyboardButton(f"Mode: {mode_text}", callback_data="toggle_mode")],
+        [InlineKeyboardButton("👁️ View Thumbnail", callback_data="view_thumb")],
         [InlineKeyboardButton("🗑️ Remove Thumbnail", callback_data="remove_thumb")]
     ])
     
     await message.reply_text(
         "⚙️ **User Personal Settings**\n\n"
-        "Configure your personal thumbnail and upload format here:",
+        "Configure your personal thumbnail, view it, or change upload format here:",
         reply_markup=keyboard
     )
 
@@ -180,6 +218,17 @@ async def callback_handler(client: Client, callback_query: CallbackQuery):
             "🖼️ Please send your thumbnail photo (Image) to this group.\n"
             "The bot will automatically save it as your default thumbnail!"
         )
+    elif data == "view_thumb":
+        if user_id in USER_THUMBNAILS and USER_THUMBNAILS[user_id] and os.path.exists(USER_THUMBNAILS[user_id]):
+            await client.send_photo(
+                chat_id=callback_query.message.chat.id,
+                photo=USER_THUMBNAILS[user_id],
+                caption="🖼️ **Your Current Saved Thumbnail:**"
+            )
+            await callback_query.answer("Here is your thumbnail!")
+        else:
+            await callback_query.answer("❌ You haven't set any custom thumbnail yet!", show_alert=True)
+
     elif data == "remove_thumb":
         if user_id in USER_THUMBNAILS:
             if USER_THUMBNAILS[user_id] and os.path.exists(USER_THUMBNAILS[user_id]):
@@ -203,18 +252,20 @@ async def callback_handler(client: Client, callback_query: CallbackQuery):
         keyboard = InlineKeyboardMarkup([
             [InlineKeyboardButton(f"Thumbnail Set: {has_thumb}", callback_data="set_thumb")],
             [InlineKeyboardButton(f"Mode: {mode_text}", callback_data="toggle_mode")],
+            [InlineKeyboardButton("👁️ View Thumbnail", callback_data="view_thumb")],
             [InlineKeyboardButton("🗑️ Remove Thumbnail", callback_data="remove_thumb")]
         ])
         await callback_query.message.edit_reply_markup(reply_markup=keyboard)
         await callback_query.answer(f"Changed upload mode to {new_mode}!")
 
     elif data.startswith("cancel_dl_"):
-        task_user_id = int(data.split("_")[2])
+        parts = data.split("_")
+        task_user_id = int(parts[2])
         if user_id == task_user_id or user_id == ADMIN_ID:
             CANCEL_REQUESTS.add(task_user_id)
             await callback_query.answer("⚠️ Task Cancel requested... Please wait.", show_alert=True)
         else:
-            await callback_query.answer("❌ You are not authorized to cancel this task!", show_alert=True)
+            await callback_query.answer("❌ You are not authorized to cancel this task! Only the user who started it or Admin can cancel.", show_alert=True)
 
     elif data.startswith("ytdl_"):
         format_code = data.split("_")[1]
@@ -290,27 +341,51 @@ async def bypass_handler(client: Client, message: Message):
 
 @app.on_message(filters.command("leech") & filters.chat(ALLOWED_GROUP_ID))
 async def leech_handler(client: Client, message: Message):
-    if len(message.command) < 2:
-        await message.reply_text("❌ Please provide a link!\nExample: `/leech https://t.me/channel/123 -n NewName -t ThumbnailURL`")
-        return
-
-    raw_text = message.text.split(" ", 1)[1]
-    url = raw_text
+    url = ""
+    raw_text = ""
     custom_name = None
     custom_thumb_source = None
-    
+
+    if message.reply_to_message:
+        if message.reply_to_message.text:
+            url = message.reply_to_message.text.strip()
+        elif message.reply_to_message.caption:
+            url = message.reply_to_message.caption.strip()
+        elif message.reply_to_message.media:
+            chat_id = message.reply_to_message.chat.id
+            msg_id = message.reply_to_message.id
+            if message.reply_to_message.chat.username:
+                url = f"https://t.me/{message.reply_to_message.chat.username}/{msg_id}"
+            else:
+                chat_str = str(chat_id).replace("-100", "")
+                url = f"https://t.me/c/{chat_str}/{msg_id}"
+
+        if len(message.command) > 1:
+            raw_text = message.text.text.split(" ", 1)[1]
+
+    if not url and len(message.command) > 1:
+        raw_text = message.text.text.split(" ", 1)[1]
+        url = raw_text.split(" -n")[0].split(" -t")[0].strip()
+    elif url and not raw_text and len(message.command) > 1:
+        raw_text = message.text.text.split(" ", 1)[1]
+
+    if not url:
+        await message.reply_text("❌ Please provide a link or reply to a message/media!\nExample: `/leech https://... -n video.mp4 -t thumbnail_url`")
+        return
+
     if "-t" in raw_text:
         parts = raw_text.split("-t")
-        url = parts[0].strip()
+        url = parts[0].split("-n")[0].strip() if "-n" in parts[0] else parts[0].strip()
         custom_thumb_source = parts[1].strip().split(" ")[0]
-        if "-n" in parts[0]:
-            sub_parts = parts[0].split("-n")
-            url = sub_parts[0].strip()
-            custom_name = sub_parts[1].strip()
+        if "-n" in raw_text:
+            try:
+                custom_name = raw_text.split("-n")[1].split("-t")[0].strip()
+            except:
+                pass
     elif "-n" in raw_text:
         parts = raw_text.split("-n")
         url = parts[0].strip()
-        custom_name = parts[1].strip().split(" -t")[0]
+        custom_name = parts[1].strip().split(" -t")[0].strip()
         if "-t" in parts[1]:
             custom_thumb_source = parts[1].split("-t")[1].strip()
 
@@ -356,7 +431,7 @@ async def ytdl_handler(client: Client, message: Message):
     ])
 
     await message.reply_text(
-        "👇 **Select video formatni tanlang:**",
+        "👇 **Select video quality format:**",
         reply_markup=keyboard
     )
 
