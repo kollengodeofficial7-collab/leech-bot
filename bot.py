@@ -4,6 +4,7 @@ import logging
 import asyncio
 import aiohttp
 import subprocess
+import random
 from datetime import datetime, timedelta
 from pyrogram import Client, filters, idle
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
@@ -29,15 +30,30 @@ ADMIN_ID = 1727225499
 F_SUB_CHANNEL_1 = os.environ.get("F_SUB_CHANNEL_1", "AlluTvSerials")
 F_SUB_CHANNEL_2 = os.environ.get("F_SUB_CHANNEL_2", "leech_Update_Channel")
 
+# Start & Command Reactions (Telegram supported reactions)
+REACTIONS = ["🤝", "😇", "🤗", "😍", "👍", "🎅", "😐", "🥰", "🤩", "😱", "🤣", "😘", "👏", "😛", "😈", "🎉", "⚡️", "🫡", "🤓", "😎", "🏆", "🔥", "🤭", "🌚", "🆒", "👻", "😁"]
+
+async def send_random_reaction(client, message):
+    """യൂസർ അയക്കുന്ന സന്ദേശത്തിന് റാൻഡം ആയി ഒരു റിയാക്ഷൻ നൽകും"""
+    try:
+        reaction = random.choice(REACTIONS)
+        await client.set_message_reaction(
+            chat_id=message.chat.id,
+            message_id=message.id,
+            reaction=reaction
+        )
+    except Exception as e:
+        logging.error(f"Failed to set reaction: {e}")
+
 # Premium, Referral & Payment Variables
 REFERAL_COUNT = int(os.environ.get('REFERAL_COUNT', '20'))
 REFERAL_PREMEIUM_TIME = os.environ.get('REFERAL_PREMEIUM_TIME', '1month')
 PAYMENT_QR = os.environ.get('PAYMENT_QR', 'https://ibb.co/xtr2Bb71')
-PAYMENT_TEXT = os.environ.get('PAYMENT_TEXT', '<b>- ᴀᴠᴀɪʟᴀʙʟᴇ ᴘʟᴀɴs ❤️ - \n- 15ʀs - 1 ᴅᴀʏꜱ\n- 40ʀs - 1 ᴡᴇᴇᴋ\n- 89ʀs - 1 ᴍᴏɴᴛʜs\n\n🎁 ᴘʀᴇᴍɪᴜᴍ ғᴇᴀᴛᴜʀᴇs 🎁\n\n○ ɴᴏ ɴᴇᴇᴅ ᴛᴏ ᴠᴇʀɪғʏ\n○ ɴᴏ ɴᴇᴇᴅ ᴛᴏ ᴏᴘᴇɴ ʟɪɴᴋ\n○ ᴅɪʀᴇᴄᴛ ғɪʟᴇs\n○ ᴀᴅ-ғʀᴇᴇ ᴇxᴘᴇʀɪᴇɴᴄᴇ\n○ ʜɪɢʜ-sᴘᴇᴇᴅ ᴅᴏᴡɴʟᴏᴀᴅ ʟɪɴᴋ\n○ ᴍᴜʟᴛɪ-ᴘʟᴀʏᴇʀ sᴛʀᴇᴀᴍɪɴɢ ʟɪɴᴋs\n○ ᴜɴʟɪᴍɪᴛᴇD ᴍᴏᴠɪᴇs & sᴇʀɪᴇs\n○ ꜰᴜʟʟ ᴀᴅᴍɪɴ sᴜᴘᴘᴏʀᴛ\n○ ʀᴇǫᴜᴇsᴛ ᴡɪʟʟ ʙᴇ ᴄᴏᴍᴘʟᴇᴛᴇᴅ ɪɴ 1ʜ ɪꜰ ᴀᴠᴀɪʟᴀʙʟᴇ\n\n✨ ᴜᴘɪ ɪᴅ - <code>vijayalakshmik8825@ybl</code>\n\nᴄʟɪᴄᴋ ᴛᴏ ᴄʜᴇᴄᴋ ʏᴏᴜʀ ᴀᴄᴛɪᴠᴇ ᴘʟᴀɴ /myplan\n\n💢 ᴍᴜsᴛ sᴇɴᴅ sᴄʀᴇᴇɴsʜᴏᴛ ᴀғᴛᴇʀ ᴘᴀʏᴍᴇɴᴛ\n\n‼️ ᴀғᴛᴇʀ sᴇɴᴅɪɴɢ ᴀ sᴄʀᴇᴇɴsʜᴏᴛ ᴘʟᴇᴀsᴇ ɢɪᴠᴇ ᴜs sᴏᴍᴇ ᴛɪᴍᴇ ᴛᴏ ᴀᴅᴅ ʏᴏU ɪɴ ᴛʜᴇ ᴘʀᴇᴍɪᴜᴍ</b>')
+PAYMENT_TEXT = os.environ.get('PAYMENT_TEXT', '<b>- ᴀᴠᴀɪʟᴀʙʟᴇ ᴘʟᴀɴs ❤️ - \n- 15ʀs - 1 ᴅᴀʏꜱ\n- 40ʀs - 1 ᴡᴇᴇᴋ\n- 89ʀs - 1 ᴍᴏɴᴛʜs\n\n🎁 ᴘʀᴇᴍɪᴜᴍ ғᴇᴀᴛᴜʀᴇs 🎁\n\n○ ɴᴏ ɴᴇᴇᴅ ᴛᴏ ᴠᴇʀɪғʏ\n○ ɴᴏ ɴᴇᴇᴅ ᴛᴏ ᴏᴘᴇɴ ʟɪɴᴋ\n○ ᴅɪʀᴇᴄᴛ ғɪʟᴇs\n○ ᴀᴅ-ғʀᴇᴇ ᴇxᴘᴇʀɪᴇɴᴄᴇ\n○ ʜɪɢʜ-sᴘᴇᴇᴅ ᴅᴏᴡɴʟᴏᴀᴅ ʟɪɴᴋ\n○ ᴍᴜʟᴛɪ-ᴘʟᴀʏᴇʀ sᴛʀᴇᴀᴍɪɴɢ ʟɪɴᴋs\n○ ᴜɴʟɪᴍɪᴛᴇD ᴍᴏᴠɪᴇs & sᴇʀɪᴇs\n○ ꜰᴜʟʟ ᴀᴅᴍɪɴ sᴜᴘᴘᴏʀᴛ\n○ ʀᴇǫᴜᴇsْت ᴡɪʟʟ ʙᴇ ᴄᴏᴍᴘʟᴇᴛᴇᴅ ɪɴ 1ʜ ɪꜰ ᴀᴠᴀɪʟᴀʙʟᴇ\n\n✨ ᴜᴘɪ ɪᴅ - <code>vijayalakshmik8825@ybl</code>\n\nᴄʟɪᴄᴋ ᴛᴏ ᴄʜᴇᴄᴋ ʏᴏᴜʀ ᴀᴄᴛɪᴠᴇ ᴘʟᴀɴ /myplan\n\n💢 ᴍᴜsᴛ sᴇɴᴅ sᴄʀᴇᴇɴsʜᴏᴛ ᴀғᴛᴇʀ ᴘᴀʏᴍᴇɴᴛ\n\n‼️ ᴀғᴛᴇʀ sᴇɴᴅɪɴɢ ᴀ sᴄʀᴇᴇɴsʜᴏᴛ ᴘʟᴇᴀsᴇ ɢɪᴠᴇ ᴜs sᴏᴍᴇ ᴛɪᴍᴇ ᴛᴏ ᴀᴅᴅ yᴏU ɪɴ ᴛʜᴇ ᴘʀᴇᴍɪᴜᴍ</b>')
 OWNER_USERNAME = os.environ.get('OWNER_USERNAME', 'Anujith1238')
 
 # Token Verification Info :
-VERIFY = bool(os.environ.get('VERIFY', True)) # Enabled by default for shortener verification
+VERIFY = bool(os.environ.get('VERIFY', True))
 VERIFY_SHORTLINK_URL = os.environ.get('VERIFY_SHORTLINK_URL', 'linkshortify.com')
 VERIFY_SHORTLINK_API = os.environ.get('VERIFY_SHORTLINK_API', '927f420bfcbeda36287288f7e98110467feedbef')
 VERIFY_TUTORIAL = os.environ.get('VERIFY_TUTORIAL', 'https://t.me/How_or_Open_Link')
@@ -53,7 +69,6 @@ ACTIVE_TASKS = {}
 USER_TASK_LIMIT = 2
 CANCEL_REQUESTS = set()
 
-# Premium Users & Verification Tracking: {user_id: expiry_timestamp}
 PREMIUM_USERS = {}
 VERIFIED_USERS = {}
 
@@ -125,7 +140,6 @@ async def verification_keyboard(client, user_id):
         [InlineKeyboardButton("❓ How to Open Link", url=VERIFY_TUTORIAL)]
     ])
 
-# Force Subscribe Check Function
 async def check_fsub(client, user_id):
     if user_id == ADMIN_ID:
         return True
@@ -218,9 +232,9 @@ async def download_thumbnail_from_source(client, thumb_source, user_id):
         logging.error(f"Failed to fetch custom thumbnail from -t: {e}")
     return None
 
-# Admin Commands for Premium Management
 @app.on_message(filters.command("addpremium") & (filters.private | filters.chat(ALLOWED_GROUP_ID)))
 async def add_premium_handler(client: Client, message: Message):
+    await send_random_reaction(client, message)
     if message.from_user.id != ADMIN_ID:
         await message.reply_text("❌ You are not authorized to use this command!")
         return
@@ -240,6 +254,7 @@ async def add_premium_handler(client: Client, message: Message):
 
 @app.on_message(filters.command("removepremium") & (filters.private | filters.chat(ALLOWED_GROUP_ID)))
 async def remove_premium_handler(client: Client, message: Message):
+    await send_random_reaction(client, message)
     if message.from_user.id != ADMIN_ID:
         await message.reply_text("❌ You are not authorized to use this command!")
         return
@@ -258,9 +273,9 @@ async def remove_premium_handler(client: Client, message: Message):
     except Exception as e:
         await message.reply_text(f"❌ Failed to remove premium! Error: `{str(e)}`")
 
-# Plan and My Plan Commands
 @app.on_message((filters.command("plan") | filters.command("plans")) & (filters.private | filters.chat(ALLOWED_GROUP_ID)))
 async def plan_command_handler(client: Client, message: Message):
+    await send_random_reaction(client, message)
     user_id = message.from_user.id
     if not await check_fsub(client, user_id):
         await message.reply_text(
@@ -287,6 +302,7 @@ async def plan_command_handler(client: Client, message: Message):
 
 @app.on_message(filters.command("myplan") & (filters.private | filters.chat(ALLOWED_GROUP_ID)))
 async def myplan_command_handler(client: Client, message: Message):
+    await send_random_reaction(client, message)
     user_id = message.from_user.id
     if not await check_fsub(client, user_id):
         await message.reply_text(
@@ -317,6 +333,7 @@ async def myplan_command_handler(client: Client, message: Message):
 
 @app.on_message(filters.command("start") & filters.private)
 async def start_handler(client: Client, message: Message):
+    await send_random_reaction(client, message)
     user = message.from_user
     user_id = user.id if user else 0
 
@@ -387,6 +404,7 @@ async def start_handler(client: Client, message: Message):
 
 @app.on_message(filters.command("help") & (filters.private | filters.chat(ALLOWED_GROUP_ID)))
 async def help_handler(client: Client, message: Message):
+    await send_random_reaction(client, message)
     user_id = message.from_user.id
     if not await check_fsub(client, user_id):
         await message.reply_text(
@@ -413,6 +431,7 @@ async def help_handler(client: Client, message: Message):
 
 @app.on_message(filters.command("usetting") & (filters.private | filters.chat(ALLOWED_GROUP_ID)))
 async def usetting_handler(client: Client, message: Message):
+    await send_random_reaction(client, message)
     user_id = message.from_user.id
     if not await check_fsub(client, user_id):
         await message.reply_text(
@@ -557,9 +576,9 @@ async def save_thumbnail(client: Client, message: Message):
         WAITING_FOR_THUMB.remove(user_id)
         await message.reply_text("✅ Thumbnail saved successfully!")
 
-# Download Commands Restricted strictly to ALLOWED_GROUP_ID
 @app.on_message(filters.command("leech") & filters.chat(ALLOWED_GROUP_ID))
 async def leech_handler(client: Client, message: Message):
+    await send_random_reaction(client, message)
     user = message.from_user
     user_name = user.first_name if user else "Unknown"
     user_id = user.id if user else 0
@@ -572,7 +591,6 @@ async def leech_handler(client: Client, message: Message):
         )
         return
 
-    # Check Verification Automatically
     if not is_verified(user_id):
         keyboard = await verification_keyboard(client, user_id)
         await message.reply_text(
@@ -601,20 +619,20 @@ async def leech_handler(client: Client, message: Message):
                 chat_str = str(chat_id).replace("-100", "")
                 url = f"https://t.me/c/{chat_str}/{msg_id}"
 
-        if len(message.command) > 1:
-            raw_text = message.text.text.split(" ", 1)[1]
+        if message.text and len(message.text.split(" ", 1)) > 1:
+            raw_text = message.text.split(" ", 1)[1]
 
-    if not url and len(message.command) > 1:
-        raw_text = message.text.text.split(" ", 1)[1]
+    if not url and message.text and len(message.text.split(" ", 1)) > 1:
+        raw_text = message.text.split(" ", 1)[1]
         url = raw_text.split(" -n")[0].split(" -t")[0].strip()
-    elif url and not raw_text and len(message.command) > 1:
-        raw_text = message.text.text.split(" ", 1)[1]
+    elif url and not raw_text and message.text and len(message.text.split(" ", 1)) > 1:
+        raw_text = message.text.split(" ", 1)[1]
 
     if not url:
         await message.reply_text("❌ Please provide a link or reply to a message/media!\nExample: `/leech https://... -n video.mp4 -t thumbnail_url`")
         return
 
-    if "-t" in raw_text:
+    if raw_text and "-t" in raw_text:
         parts = raw_text.split("-t")
         url = parts[0].split("-n")[0].strip() if "-n" in parts[0] else parts[0].strip()
         custom_thumb_source = parts[1].strip().split(" ")[0]
@@ -623,7 +641,7 @@ async def leech_handler(client: Client, message: Message):
                 custom_name = raw_text.split("-n")[1].split("-t")[0].strip()
             except:
                 pass
-    elif "-n" in raw_text:
+    elif raw_text and "-n" in raw_text:
         parts = raw_text.split("-n")
         url = parts[0].strip()
         custom_name = parts[1].strip().split(" -t")[0].strip()
@@ -649,6 +667,7 @@ async def leech_handler(client: Client, message: Message):
 
 @app.on_message((filters.command("ytdl") | filters.command("yt")) & filters.chat(ALLOWED_GROUP_ID))
 async def ytdl_handler(client: Client, message: Message):
+    await send_random_reaction(client, message)
     user_id = message.from_user.id
     if not await check_fsub(client, user_id):
         await message.reply_text(
@@ -658,7 +677,6 @@ async def ytdl_handler(client: Client, message: Message):
         )
         return
 
-    # Check Verification Automatically
     if not is_verified(user_id):
         keyboard = await verification_keyboard(client, user_id)
         await message.reply_text(
