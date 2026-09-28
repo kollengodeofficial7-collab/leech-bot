@@ -377,7 +377,7 @@ async def start_handler(client: Client, message: Message):
 
     welcome_text = (
         f"🌟 **Welcome to Advanced Leech Bot, {user_name}!** 🚀\n\n"
-        f"I am an advanced Leech Bot. I can help you download videos and audio from TeraBox, YouTube, Telegram links, M3U8, MP4, MP3, and more.\n\n"
+        f"I am an advanced Leech Bot. I can help you download videos and audio from TeraBox, YouTube, Gofile, Telegram links, M3U8, MP4, MP3, and more.\n\n"
         f"🛠️ **Key Features:**\n"
         f" • Use `-n` to rename media.\n"
         f" • Use `-t` to set custom thumbnails.\n"
@@ -660,9 +660,11 @@ async def leech_handler(client: Client, message: Message):
 
     status_msg = await message.reply_text("⏳ Initializing download... Please wait.")
     
-    if "t.me/" in url and not "http" in url.split("t.me/")[1] and len(url.split("t.me/")[1].split("/")) >= 2:
+    # Check if Telegram link format
+    if "t.me/" in url and "http" in url and len(url.split("t.me/")[1].split("/")) >= 2:
         await process_telegram_link(client, status_msg, user_id, user_name, url, custom_name, custom_thumb_source)
     else:
+        # Handles Gofile, TeraBox, Direct URL, YouTube and other links supported by yt-dlp
         await process_download(client, status_msg, user_id, user_name, url, custom_name, custom_thumb_source, 'best')
 
 @app.on_message((filters.command("ytdl") | filters.command("yt")) & filters.chat(ALLOWED_GROUP_ID))
